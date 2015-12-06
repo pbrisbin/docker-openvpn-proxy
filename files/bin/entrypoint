@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+mkdir -p /dev/net
+mknod /dev/net/tun c 10 200
+
+sed -i '
+  s/@GATEWAY@/'"$VPN_GATEWAY"'/;
+  s/@CERTIFICATE@/'"$VPN_CERTIFICATE"'/;
+  ' /etc/openvpn/client.conf
+
+printf "%s\n" \
+  "$VPN_USER" \
+  "$VPN_PASS" > \
+  /etc/openvpn/credentials.conf
+
+chmod 600 /etc/openvpn/credentials.conf
+
+exec "$@"
